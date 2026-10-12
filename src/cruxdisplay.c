@@ -153,25 +153,25 @@ struct crux_wr {
  * D   2  53 20
  */
 static const struct crux_wr crux_init_tab[] = {
-	{ "R000", DSI0_BASE + 0x004, 0x000001f5, 0xffffffff, 'S' },
-	{ "R038", DSI0_BASE + 0x03c, 0x14000000, 0xffffffff, 'S' },
-	{ "R03c", DSI0_BASE + 0x040, 0x00000008, 0xffffffff, 'C' },
-	{ "R040", DSI0_BASE + 0x044, 0x00013c2c, 0xffffffff, 'C' },
-	{ "R044", DSI0_BASE + 0x048, 0x00001000, 0xffffffff, 'S' },
-	{ "R048", DSI0_BASE + 0x04c, 0x00000004, 0xffffffff, 'S' },
-	{ "R054", DSI0_BASE + 0x058, 0x0ca90039, 0xffffffff, 'S' },
-	{ "R058", DSI0_BASE + 0x05c, 0x09240438, 0xffffffff, 'S' },
-	{ "R080", DSI0_BASE + 0x084, 0x80001004, 0xffffffff, 'C' },
-	{ "R08c", DSI0_BASE + 0x090, 0x00000001, 0xffffffff, 'S' },
-	{ "R0ac", DSI0_BASE + 0x0b0, 0x00000000, 0xffffffff, 'S' },
-	{ "R0c0", DSI0_BASE + 0x0c4, 0x00001921, 0xffffffff, 'C' },
-	{ "R0c8", DSI0_BASE + 0x0cc, 0x00000001, 0xffffffff, 'S' },
-	{ "R108", DSI0_BASE + 0x10c, 0x13ff3fe0, 0xffffffff, 'S' },
-	{ "R10c", DSI0_BASE + 0x110, 0x02000700, 0xffffffff, 'S' },
-	{ "R114", DSI0_BASE + 0x118, 0x00000000, 0xffffffff, 'S' },
-	{ "R118", DSI0_BASE + 0x11c, 0x0000023f, 0xffffffff, 'C' },
-	{ "R128", DSI0_BASE + 0x12c, 0x00000000, 0xffffffff, 'S' },
-	{ "R1b4", DSI0_BASE + 0x1b8, 0x00010006, 0xffffffff, 'C' },
+	{ "R000", DSI0_BASE + 0x000, 0x000001f5, 0xffffffff, 'S' },
+	{ "R038", DSI0_BASE + 0x038, 0x14000000, 0xffffffff, 'S' },
+	{ "R03c", DSI0_BASE + 0x03c, 0x00000008, 0xffffffff, 'C' },
+	{ "R040", DSI0_BASE + 0x040, 0x00013c2c, 0xffffffff, 'C' },
+	{ "R044", DSI0_BASE + 0x044, 0x00001000, 0xffffffff, 'S' },
+	{ "R048", DSI0_BASE + 0x048, 0x00000004, 0xffffffff, 'S' },
+	{ "R054", DSI0_BASE + 0x054, 0x0ca90039, 0xffffffff, 'S' },
+	{ "R058", DSI0_BASE + 0x058, 0x09240438, 0xffffffff, 'S' },
+	{ "R080", DSI0_BASE + 0x080, 0x80001004, 0xffffffff, 'C' },
+	{ "R08c", DSI0_BASE + 0x08c, 0x00000001, 0xffffffff, 'S' },
+	{ "R0ac", DSI0_BASE + 0x0ac, 0x00000000, 0xffffffff, 'S' },
+	{ "R0c0", DSI0_BASE + 0x0c0, 0x00001921, 0xffffffff, 'C' },
+	{ "R0c8", DSI0_BASE + 0x0c8, 0x00000001, 0xffffffff, 'S' },
+	{ "R108", DSI0_BASE + 0x108, 0x13ff3fe0, 0xffffffff, 'S' },
+	{ "R10c", DSI0_BASE + 0x10c, 0x02000700, 0xffffffff, 'S' },
+	{ "R114", DSI0_BASE + 0x114, 0x00000000, 0xffffffff, 'S' },
+	{ "R118", DSI0_BASE + 0x118, 0x0000023f, 0xffffffff, 'C' },
+	{ "R128", DSI0_BASE + 0x128, 0x00000000, 0xffffffff, 'S' },
+	{ "R1b4", DSI0_BASE + 0x1b4, 0x00010006, 0xffffffff, 'C' },
 	{ NULL, 0, 0, 0, 0 },
 };
 
@@ -190,7 +190,7 @@ static const struct {
 };
 
 static grub_uint32_t crux_r0c0 = 0x00001921;
-/* [crux] 表项地址的手工修正量：set crux_dsi_off=N（默认 0，因为表已按实测 +4） */
+/* [crux] 表项地址的手工修正量：set crux_dsi_off=N（默认 0） */
 static int crux_off_extra;
 #define MBOX_MODE	9
 #define MBOX_DTB_RATE	10
@@ -396,13 +396,13 @@ cmd_crux_display_init (grub_command_t cmd __attribute__ ((unused)),
 	mbox_put (MBOX_CTRL, ctrl);
 	mbox_put (MBOX_TRIG, trig);
 	mbox_put (MBOX_CFG0, cfg0);
-	/* [crux] 留痕：表里记录过、内核不常重写的三项（DMA_BASE / STREAM0_TOTAL / STREAM2_CTRL）
+	/* [crux] 留痕：表里记录过、内核不常重写的三项（R040 / R054 / R1b4）
 	 * 如果引导器写入命中正确地址，下面的读回值应分别等于
 	 *   0x00013c2c / 0x0ca90039 / 0x00010006
 	 */
-	mbox_put (32, crux_rd (DSI0_BASE + 0x044));
-	mbox_put (33, crux_rd (DSI0_BASE + 0x058));
-	mbox_put (34, crux_rd (DSI0_BASE + 0x1b8));
+	mbox_put (32, crux_rd (DSI0_BASE + 0x040));
+	mbox_put (33, crux_rd (DSI0_BASE + 0x054));
+	mbox_put (34, crux_rd (DSI0_BASE + 0x1b4));
 	mbox_put (MBOX_DONE, MBOX_DONE_MAGIC);
 	grub_printf ("    [crux] 重放完 CTRL=%08x TRIG=%08x CFG0=%08x\n",
 		     ctrl, trig, cfg0);
