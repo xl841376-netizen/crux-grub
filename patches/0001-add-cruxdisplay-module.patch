@@ -1,0 +1,11 @@
+--- a/grub-core/Makefile.core.def
++++ b/grub-core/Makefile.core.def
+@@ -2773,3 +2773,8 @@
+   cflags = '-Wno-uninitialized';
+   cppflags = '-I$(srcdir)/lib/libtasn1-grub -I$(srcdir)/tests/asn1/';
+ };
++
++module = {
++  name = cruxdisplay;
++  common = grub-core/cruxdisplay.c;
++};

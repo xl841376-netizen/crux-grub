@@ -1,0 +1,53 @@
+name: Build crux-grub
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'src/**'
+      - 'boot/**'
+      - 'patches/**'
+      - 'build.sh'
+      - 'Makefile'
+      - '.github/workflows/build.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: 安装依赖（x86_64 主机交叉编译 aarch64-efi）
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y --no-install-recommends \
+            build-essential bison flex gettext python3 curl patch ca-certificates xz-utils \
+            gcc-aarch64-linux-gnu
+
+      - name: 构建 BOOTAA64.EFI
+        run: ./build.sh
+
+      - name: 上传产物
+        uses: actions/upload-artifact@v4
+        with:
+          name: crux-grub-BOOTAA64
+          path: dist/BOOTAA64.efi*
+          if-no-files-found: error
+
+      - name: 发布/更新 release（crux-grub-latest）
+        if: github.event_name == 'push'
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: crux-grub-latest
+          name: crux-grub latest（自足引导器）
+          body: |
+            自动构建的 aarch64-efi standalone GRUB：`cruxdisplay` 已内建，ESP 只需要这一个 `BOOTAA64.EFI`。
+            有 `/EFI/crux/grub.cfg` 时优先用它（换菜单不必重做 .efi），没有就用镜像内嵌菜单。
+          files: |
+            dist/BOOTAA64.efi
+            dist/BOOTAA64.efi.sha256
+          make_latest: true
