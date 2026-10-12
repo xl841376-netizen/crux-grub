@@ -1,9 +1,0 @@
---- grub-core/Makefile.core.def.orig
-+++ grub-core/Makefile.core.def
-@@ -EOF_APPEND,0 +EOF_APPEND,4 @@
- };
-+
-+module = {
-+  name = cruxdisplay;
-+  common = grub-core/cruxdisplay.c;
-+};
