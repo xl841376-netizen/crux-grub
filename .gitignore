@@ -2,3 +2,4 @@
 *.module
 build/
 dist/
+src/*.bak_*
